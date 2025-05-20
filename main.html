@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IBDP Grade Calculator</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f8;
+    }
+
+    header, footer {
+      background-color: #263238;
+      color: white;
+      text-align: center;
+      padding: 15px 0;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 20px;
+    }
+
+    .form-section {
+      flex: 2;
+      background: #ffffff;
+      padding: 20px;
+      margin-right: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .grade-boundaries {
+      flex: 1;
+      background-color: #e3f2fd;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      min-width: 240px;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-top: 15px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 15px;
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button:hover {
+      background-color: #0d47a1;
+    }
+
+    .component-table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+
+    .component-table .header {
+      background-color: #e0e0e0;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .component-row {
+      display: flex;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+
+    .component-row div {
+      flex: 1;
+    }
+
+    .component-row input {
+      width: 100%;
+    }
+
+    .component-table .header-row {
+      display: flex;
+      font-weight: 700;
+      background-color: #cfd8dc;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .component-table .header-row div {
+      flex: 1;
+      text-align: center;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #e8f5e9;
+      border: 2px solid #4caf50;
+      border-radius: 10px;
+      font-weight: 600;
+      color: #2e7d32;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      text-align: center;
+      padding: 8px;
+      border: 1px solid #90caf9;
+    }
+
+    th {
+      background-color: #2196f3;
+      color: white;
+    }
+
+    footer {
+      margin-top: 30px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .form-section {
+        margin-right: 0;
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>IBDP Grade Calculator</h1>
+  </header>
+
+  <div class="container">
+    <!-- Grade Boundaries -->
+    <div class="grade-boundaries">
+      <h3>Grade Boundaries</h3>
+      <p style="margin-bottom: 10px;">(Minimum % Required)</p>
+      <table>
+        <tr><th>Grade</th><th>Min %</th></tr>
+        <tr><td>7</td><td><input type="number" id="g7" value="85"></td></tr>
+        <tr><td>6</td><td><input type="number" id="g6" value="75"></td></tr>
+        <tr><td>5</td><td><input type="number" id="g5" value="65"></td></tr>
+        <tr><td>4</td><td><input type="number" id="g4" value="50"></td></tr>
+        <tr><td>3</td><td><input type="number" id="g3" value="40"></td></tr>
+        <tr><td>2</td><td><input type="number" id="g2" value="30"></td></tr>
+        <tr><td>1</td><td><input type="number" id="g1" value="0"></td></tr>
+      </table>
+    </div>
+
+    <!-- Main Form -->
+    <div class="form-section">
+      <label>Subject Name:</label>
+      <input type="text" id="subjectName" placeholder="e.g., Chemistry">
+
+      <label>Level:</label>
+      <select id="level">
+        <option value="HL">HL</option>
+        <option value="SL">SL</option>
+      </select>
+
+      <label>Number of Components (Papers/IA):</label>
+      <input type="number" id="numComponents" min="1" max="10">
+      <button onclick="generateComponents()">Generate Components</button>
+
+      <div class="component-table" id="componentsContainer"></div>
+
+      <button onclick="calculateGrade()">Calculate Final Grade</button>
+
+      <div class="result" id="resultBox" style="display:none;"></div>
+    </div>
+  </div>
+
+  <footer>
+    Created by Vishnu G B – May 2025
+  </footer>
+
+  <script>
+    function generateComponents() {
+      const container = document.getElementById('componentsContainer');
+      container.innerHTML = '';
+
+      const num = parseInt(document.getElementById('numComponents').value);
+      if (isNaN(num) || num < 1) {
+        alert('Enter a valid number of components.');
+        return;
+      }
+
+      const header = document.createElement('div');
+      header.className = 'header-row';
+      header.innerHTML = `
+        <div>Component Name</div>
+        <div>Weightage (%)</div>
+        <div>Total Marks</div>
+        <div>Marks Obtained</div>
+      `;
+      container.appendChild(header);
+
+      for (let i = 0; i < num; i++) {
+        const row = document.createElement('div');
+        row.className = 'component-row';
+        row.innerHTML = `
+          <div><input type="text" class="compName" placeholder="Paper ${i + 1}"></div>
+          <div><input type="number" class="weightage" min="0" max="100"></div>
+          <div><input type="number" class="totalMarks" min="1"></div>
+          <div><input type="number" class="marksObtained" min="0"></div>
+        `;
+        container.appendChild(row);
+      }
+    }
+
+    function calculateGrade() {
+      const compNames = document.querySelectorAll('.compName');
+      const weights = document.querySelectorAll('.weightage');
+      const totals = document.querySelectorAll('.totalMarks');
+      const obtained = document.querySelectorAll('.marksObtained');
+
+      let totalPercent = 0;
+      let totalWeight = 0;
+
+      for (let i = 0; i < compNames.length; i++) {
+        const weight = parseFloat(weights[i].value);
+        const total = parseFloat(totals[i].value);
+        const got = parseFloat(obtained[i].value);
+
+        if (isNaN(weight) || isNaN(total) || isNaN(got) || total === 0) {
+          alert('Fill all component fields properly.');
+          return;
+        }
+
+        const percent = (got / total) * 100;
+        totalPercent += (percent * weight) / 100;
+        totalWeight += weight;
+      }
+
+      if (totalWeight !== 100) {
+        alert('Total weightage must equal 100%. Currently: ' + totalWeight + '%');
+        return;
+      }
+
+      // Determine grade based on boundaries
+      const gradeBoundaries = [
+        { grade: 7, min: parseFloat(document.getElementById('g7').value) },
+        { grade: 6, min: parseFloat(document.getElementById('g6').value) },
+        { grade: 5, min: parseFloat(document.getElementById('g5').value) },
+        { grade: 4, min: parseFloat(document.getElementById('g4').value) },
+        { grade: 3, min: parseFloat(document.getElementById('g3').value) },
+        { grade: 2, min: parseFloat(document.getElementById('g2').value) },
+        { grade: 1, min: parseFloat(document.getElementById('g1').value) },
+      ];
+
+      let finalGrade = 1;
+      for (const boundary of gradeBoundaries) {
+        if (totalPercent >= boundary.min) {
+          finalGrade = boundary.grade;
+          break;
+        }
+      }
+
+      document.getElementById('resultBox').style.display = 'block';
+      document.getElementById('resultBox').innerText = `Final Percentage: ${totalPercent.toFixed(2)}%\nIBDP Grade: ${finalGrade}`;
+    }
+  </script>
+</body>
+</html>
